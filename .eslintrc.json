@@ -1,0 +1,24 @@
+{
+  "extends": ["next/core-web-vitals", "airbnb-base", "airbnb", "airbnb/hooks"],
+  "plugins": ["prettier", "jsx-a11y", "jest"],
+  "rules": {
+    "prettier/prettier": "warn",
+    "no-console": [
+      "warn",
+      { "allow": ["info", "warn", "error", "debug", "trace"] }
+    ],
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "consistent-return": 0,
+    "operator-linebreak": "off",
+    "comma-dangle": "off",
+    "implicit-arrow-linebreak": "off",
+    "object-curly-newline": "off",
+    "no-restricted-syntax": "off"
+  },
+  "env": {
+    "jest/globals": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
+  }
+}
