@@ -13,7 +13,8 @@
     "comma-dangle": "off",
     "implicit-arrow-linebreak": "off",
     "object-curly-newline": "off",
-    "no-restricted-syntax": "off"
+    "no-restricted-syntax": "off",
+    "no-confusing-arrow": "off"
   },
   "env": {
     "jest/globals": true

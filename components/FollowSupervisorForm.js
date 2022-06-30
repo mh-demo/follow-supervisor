@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -9,26 +9,32 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import SupervisorDropdown from './SupervisorDropdown';
+import { AppContext } from './AppContext';
 
 const API_URL =
   process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
-export default function FollowSupervisor() {
-  const [helperText, setHelperText] = useState({});
-  const [supervisor, setSupervisor] = useState('');
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [contactPref, setContactPref] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
+export default function FollowSupervisorForm() {
+  const [app, dispatch] = React.useContext(AppContext);
+  const set = (key, value) =>
+    dispatch({ type: 'set', component: 'FollowSupervisorForm', key, value });
+  const {
+    helperText,
+    supervisor,
+    email,
+    firstName,
+    lastName,
+    phoneNumber,
+    contactPref,
+    isSubmitting,
+    success,
+  } = app.FollowSupervisorForm;
 
   async function submitForm(event) {
     event.preventDefault();
     try {
-      setHelperText({});
-      setIsSubmitting(true);
+      set('helperText', {});
+      set('isSubmitting', true);
 
       const reqBody = {
         supervisor,
@@ -47,27 +53,21 @@ export default function FollowSupervisor() {
         body: JSON.stringify(reqBody),
       });
       if (response.status === 200) {
-        setFirstName('');
-        setLastName('');
-        setEmail('');
-        setPhoneNumber('');
-        setContactPref('');
-        setSupervisor('');
-        setHelperText({});
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 5000);
+        dispatch({ type: 'reset', component: 'FollowSupervisorForm' });
+        set('success', true);
+        setTimeout(() => set('success', false), 5000);
       } else {
         const data = await response.json();
-        setHelperText(data.helperText);
+        set('helperText', data.helperText);
       }
     } catch (error) {
-      setHelperText({
+      set('helperText', {
         genericError:
           'There was a problem handling the request.  Please try again later.',
       });
       console.error(error);
     } finally {
-      setIsSubmitting(false);
+      set('isSubmitting', false);
     }
   }
 
@@ -77,7 +77,7 @@ export default function FollowSupervisor() {
         <Typography variant="h6" color="textSecondary" align="center">
           Subscribe to notifications from your supervisor:
         </Typography>
-        <SupervisorDropdown value={supervisor} setter={setSupervisor} />
+        <SupervisorDropdown />
         {success && !supervisor && (
           <Grow in={success && !supervisor} timeout={500}>
             <Typography
@@ -109,7 +109,7 @@ export default function FollowSupervisor() {
                   color="primary"
                   value={contactPref}
                   exclusive
-                  onChange={(_, newValue) => setContactPref(newValue)}
+                  onChange={(_, newValue) => set('contactPref', newValue)}
                 >
                   <ToggleButton value="email">Email</ToggleButton>
                   <ToggleButton value="text">Text</ToggleButton>
@@ -141,7 +141,7 @@ export default function FollowSupervisor() {
                       value={email}
                       error={!!helperText?.email}
                       helperText={helperText?.email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => set('email', e.target.value)}
                       inputProps={{ minLength: 5, maxLength: 256 }}
                       required
                     />
@@ -157,7 +157,7 @@ export default function FollowSupervisor() {
                       value={phoneNumber}
                       error={!!helperText?.phoneNumber}
                       helperText={helperText?.phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      onChange={(e) => set('phoneNumber', e.target.value)}
                       inputProps={{ minLength: 9, maxLength: 16 }}
                       required
                     />
@@ -170,7 +170,7 @@ export default function FollowSupervisor() {
                     value={firstName}
                     error={!!helperText?.firstName}
                     helperText={helperText?.firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    onChange={(e) => set('firstName', e.target.value)}
                     inputProps={{ minLength: 1, maxLength: 64 }}
                     required
                   />
@@ -182,7 +182,7 @@ export default function FollowSupervisor() {
                     value={lastName}
                     error={!!helperText?.lastName}
                     helperText={helperText?.lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    onChange={(e) => set('lastName', e.target.value)}
                     inputProps={{ minLength: 1, maxLength: 64 }}
                     required
                   />

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { PropTypes } from 'prop-types';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { AppContext } from './AppContext';
 
 const API_URL =
   process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -29,7 +29,11 @@ async function fetchSupervisorList(setSupervisorList) {
   }
 }
 
-export default function SupervisorDropdown({ value = '', setter }) {
+export default function SupervisorDropdown() {
+  const [app, dispatch] = React.useContext(AppContext);
+  const set = (key, value) =>
+    dispatch({ type: 'set', component: 'FollowSupervisorForm', key, value });
+  const { supervisor } = app.FollowSupervisorForm;
   const [supervisorList, setSupervisorList] = useState([]);
   const supervisorListIsLoaded = supervisorList.length > 0;
 
@@ -42,9 +46,9 @@ export default function SupervisorDropdown({ value = '', setter }) {
       <InputLabel id="supervisor-label">Supervisor</InputLabel>
       <Select
         labelId="supervisor-label"
-        value={value}
+        value={supervisor}
         label="Supervisor"
-        onChange={(e) => setter(e.target.value)}
+        onChange={(e) => set('supervisor', e.target.value)}
       >
         <MenuItem value="">
           <em>{supervisorListIsLoaded ? '(None)' : '(Loading...)'}</em>
@@ -62,10 +66,3 @@ export default function SupervisorDropdown({ value = '', setter }) {
     </FormControl>
   );
 }
-SupervisorDropdown.propTypes = {
-  value: PropTypes.string,
-  setter: PropTypes.func.isRequired,
-};
-SupervisorDropdown.defaultProps = {
-  value: '',
-};
